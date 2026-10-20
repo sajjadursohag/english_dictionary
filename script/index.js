@@ -4,18 +4,29 @@ const loadLessons = () => {
     .then((json) => displayLesson(json.data));
 };
 
+const removeActive = () => {
+  const lessonButons = document.querySelectorAll(".lesson-btn");
+  // console.log(lessonButons);
+  lessonButons.forEach(btn => btn.classList.remove("active"));
+};
+
 const loadLevelWord = (id) => {
   // console.log(id);
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
-    .then((data) => displayLevelWord(data.data));
+    .then((data) => {
+      removeActive(); // remove all active class
+      const clickBtn = document.getElementById(`lesson-btn-${id}`);
+      clickBtn.classList.add("active"); // add active class
+      displayLevelWord(data.data);
+    });
 };
 
 const displayLevelWord = (words) => {
   const wordContainer = document.getElementById("word-container");
   wordContainer.innerHTML = "";
-  
+
   // {
   //   "id": 4,
   //   "level": 1,
@@ -33,7 +44,7 @@ const displayLevelWord = (words) => {
     <p class="font-semibold">Meaning / Pronounciation</p>
     <div class="text-2xl font-medium font-bangla">"${word.meaning} / ${word.pronunciation}"</div>
     <div class="flex justify-between items-center">
-      <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF]"><i class="fa-solid fa-info"></i></button>
+      <button onclick="my_modal_5.showModal()" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF]"><i class="fa-solid fa-info"></i></button>
       <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF]"><i class="fa-solid fa-volume"></i></button>
     </div>
   </div>
@@ -51,7 +62,7 @@ const displayLesson = (lessons) => {
     const btnDiv = document.createElement("div");
     btnDiv.innerHTML = `
         
-                <button onclick="loadLevelWord(${lesson.level_no})" class="btn btn-primary btn-outline"><i class="fa-solid fa-book"></i>Lesson - ${lesson.level_no}</button>
+                <button id="lesson-btn-${lesson.level_no}" onclick="loadLevelWord(${lesson.level_no})" class="btn btn-primary btn-outline lesson-btn "><i class="fa-solid fa-book"></i>Lesson - ${lesson.level_no}</button>
               
         `;
     levelContainer.append(btnDiv);
