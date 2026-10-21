@@ -8,6 +8,12 @@ const manageSpinner = (status) => {
   }
 };
 
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
+
 const loadLessons = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all") // promise of response
     .then((res) => res.json()) // promise of json data
@@ -119,7 +125,8 @@ const displayLevelWord = (words) => {
     <div class="text-2xl font-medium font-bangla">"${word.meaning} / ${word.pronunciation}"</div>
     <div class="flex justify-between items-center">
       <button onclick="loadWordDetails(${word.id})" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF]"><i class="fa-solid fa-info"></i></button>
-      <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF]"><i class="fa-solid fa-volume"></i></button>
+
+      <button onclick="pronounceWord('${word.word}')" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF]"><i class="fa-solid fa-volume"></i></button>
     </div>
   </div>
         `;
@@ -147,7 +154,7 @@ const displayLesson = (lessons) => {
 loadLessons();
 
 document.getElementById("btn-search").addEventListener("click", () => {
-   removeActive();
+  removeActive();
   const input = document.getElementById("input-search");
   const searchValue = input.value.trim().toLowerCase();
   console.log(searchValue);
