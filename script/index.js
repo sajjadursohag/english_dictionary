@@ -1,3 +1,13 @@
+const manageSpinner = (status) => {
+  if (status == true) {
+    document.getElementById("spinner").classList.remove("hidden");
+    document.getElementById("word-container").classList.add("hidden");
+  } else {
+    document.getElementById("word-container").classList.remove("hidden");
+    document.getElementById("spinner").classList.add("hidden");
+  }
+};
+
 const loadLessons = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all") // promise of response
     .then((res) => res.json()) // promise of json data
@@ -11,7 +21,7 @@ const removeActive = () => {
 };
 
 const loadLevelWord = (id) => {
-  // console.log(id);
+  manageSpinner(true);
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
@@ -41,42 +51,48 @@ const loadLevelWord = (id) => {
 
 const loadWordDetails = async (id) => {
   const url = `https://openapi.programming-hero.com/api/word/${id}`;
-  // console.log(url);
+
   const res = await fetch(url);
   const details = await res.json();
-  displayWordDetails(details.data);
+
+  const word = details.data;
+
   const detailsBox = document.getElementById("details-container");
+
   detailsBox.innerHTML = `
-  <div class="">
-  <h2 class="text-2xl font-bold"> ${word.word}(<i class="fa-solid fa-microphone-lines-slash"></i>) : ${word.pronunciation} </h2>
-</div>
-<div class="">
-  <h2 class="font-bold">
-    Meaning
-    <p>আগ্রহী </p>
-  </h2>
-</div>
-<div class="">
-  <h2 class="font-bold">
-    Example
-    <p> Lorem ipsum dolor sit amet.</p>
-  </h2>
-</div>
-<div class="">
-  <h2 class="font-bold">
-    Synonym
-   <span class="btn">Syn1</span>
-   <span class="btn">Syn2</span>
-   <span class="btn">Syn3</span>
-  </h2>
-</div>
+    <div>
+      <h2 class="text-2xl font-bold">
+        ${word.word}
+        (<i class="fa-solid fa-microphone-lines-slash"></i> :
+        ${word.pronunciation})
+      </h2>
+    </div>
 
+    <div>
+      <h2 class="font-bold">Meaning</h2>
+      <p>${word.meaning || "Meaning not available"}</p>
+    </div>
 
+    <div>
+      <h2 class="font-bold">Example</h2>
+      <p>${word.sentence || "Example not available"}</p>
+    </div>
 
-
+    <div>
+      <h2 class="font-bold">Synonym</h2>
+      ${
+        word.synonyms?.length
+          ? word.synonyms
+              .map((syn) => `<span class="btn mr-2">${syn}</span>`)
+              .join("")
+          : "No synonyms available"
+      }
+    </div>
   `;
+
   document.getElementById("word_modal").showModal();
 };
+
 const displayWordDetails = (word) => {
   console.log(word);
 };
@@ -109,6 +125,7 @@ const displayLevelWord = (words) => {
         `;
     wordContainer.append(card);
   });
+  manageSpinner(false);
 };
 
 const displayLesson = (lessons) => {
